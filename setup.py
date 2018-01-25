@@ -56,6 +56,7 @@ setup(
         'flask-sqlalchemy==2.1',
         'flask-testing==0.6.2',
         'flask-wtf==0.14.2',
+	'flask-oauthlib',
         'flower==0.9.2',
         'future>=0.16.0, <0.17',
         'python-geohash==0.8.5',

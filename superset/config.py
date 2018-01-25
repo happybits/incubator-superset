@@ -16,7 +16,8 @@ import os
 import sys
 
 from dateutil import tz
-from flask_appbuilder.security.manager import AUTH_DB
+from flask_appbuilder.security.manager import AUTH_DB, AUTH_OAUTH
+import flask_oauthlib.client
 
 from superset.stats_logger import DummyStatsLogger
 
@@ -46,7 +47,7 @@ SUPERSET_CELERY_WORKERS = 32
 
 SUPERSET_WEBSERVER_ADDRESS = '0.0.0.0'
 SUPERSET_WEBSERVER_PORT = 8088
-SUPERSET_WEBSERVER_TIMEOUT = 60
+SUPERSET_WEBSERVER_TIMEOUT = 640
 EMAIL_NOTIFICATIONS = False
 CUSTOM_SECURITY_MANAGER = None
 SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -116,7 +117,31 @@ DRUID_ANALYSIS_TYPES = ['cardinality']
 # AUTH_DB : Is for database (username/password()
 # AUTH_LDAP : Is for LDAP
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
-AUTH_TYPE = AUTH_DB
+AUTH_TYPE = AUTH_OAUTH
+
+OAUTH_PROVIDERS = [
+    {'name':'twitter', 'icon':'fa-twitter',
+        'remote_app': {
+            'consumer_key':'TWITTER KEY',
+            'consumer_secret':'TWITTER SECRET',
+            'base_url':'https://api.twitter.com/1.1/',
+            'request_token_url':'https://api.twitter.com/oauth/request_token',
+            'access_token_url':'https://api.twitter.com/oauth/access_token',
+            'authorize_url':'https://api.twitter.com/oauth/authenticate'}
+    },
+    {'name':'google', 'whitelist': ['@happybits.co'], 'icon':'fa-google', 'token_key':'access_token',
+        'remote_app': {
+            'consumer_key':'1034038056477-jl3rqq960l3rkcdqijqehqep1pa85bio.apps.googleusercontent.com',
+            'consumer_secret':'luJriZzUYXJAn7XEjqoZ-JBd',
+            'base_url':'https://www.googleapis.com/oauth2/v2/',
+            'request_token_params':{
+              'scope': 'email profile'
+            },
+            'request_token_url':None,
+            'access_token_url':'https://accounts.google.com/o/oauth2/token',
+            'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+    }
+]
 
 # Uncomment to setup Full admin role name
 # AUTH_ROLE_ADMIN = 'Admin'
@@ -125,10 +150,10 @@ AUTH_TYPE = AUTH_DB
 # AUTH_ROLE_PUBLIC = 'Public'
 
 # Will allow user self registration
-# AUTH_USER_REGISTRATION = True
+AUTH_USER_REGISTRATION = True
 
 # The default user self registration role
-# AUTH_USER_REGISTRATION_ROLE = "Public"
+AUTH_USER_REGISTRATION_ROLE = "Public"
 
 # When using LDAP Auth, setup the ldap server
 # AUTH_LDAP_SERVER = "ldap://ldapserver.new"
